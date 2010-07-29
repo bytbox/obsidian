@@ -1,0 +1,3 @@
+This package does /not/ use autotools. Installation is done with
+'make;sudo make install' - no configuration step is necessary or
+available.
