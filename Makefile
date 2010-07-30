@@ -1,12 +1,14 @@
 .PHONY: all clean install
 
+include ${GOROOT}/src/Make.${GOARCH}
+
 all: obsidian
 
-obsidian: main.6
-	6l -o $@ main.6
+obsidian: main.${O}
+	${O}l -o $@ main.${O}
 
-main.6: main.go
-	6g -o $@ main.go
+main.${O}: main.go
+	${O}g -o $@ main.go
 
 clean:
-	rm obsidian *.6
+	rm obsidian *.${O}
