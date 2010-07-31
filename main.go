@@ -1,12 +1,14 @@
 package main
 
 import (
+	"container/vector"
 	"fmt"
 	"http"
 	"opts"
 	"os"
 	"path"
-	//"template"
+	"strings"
+	"template"
 )
 
 var port = opts.Option("p", "port", "the port to use", "8080")
@@ -22,7 +24,10 @@ func main() {
 	opts.Parse()
 
 	fmt.Fprintf(os.Stderr, "Reading data...\n")
-	readData()
+	readTemplates()
+	readPosts()
+
+	fmt.Fprintf(os.Stderr, "Compiling site...\n")
 
 	fmt.Fprintf(os.Stderr, "Serving!\n")
 	// set up the extra servers
@@ -37,17 +42,26 @@ func main() {
 
 // The various templates.
 var (
-	genTemplate      string
-	adminTemplate    string
-	indexTemplate    string
-	postTemplate     string
-	tagTemplate      string
-	categoryTemplate string
+	genTemplate      *template.Template
+	adminTemplate    *template.Template
+	indexTemplate    *template.Template
+	postTemplate     *template.Template
+	excerptTemplate  *template.Template
+	tagTemplate      *template.Template
+	categoryTemplate *template.Template
+	notFoundTemplate *template.Template
 )
 
-func readTemplate(name string) string {
+func readTemplate(name string) *template.Template {
 	templateDirectory := path.Join(*blogroot, "templates")
-	return readFile(path.Join(templateDirectory, name))
+	templatePath := path.Join(templateDirectory, name)
+	templateText := readFile(templatePath)
+	template, err := template.Parse(templateText, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err.String())
+		os.Exit(1)
+	}
+	return template
 }
 
 func readTemplates() {
@@ -58,10 +72,41 @@ func readTemplates() {
 	postTemplate = readTemplate("post.html")
 	tagTemplate = readTemplate("tag.html")
 	categoryTemplate = readTemplate("category.html")
+	excerptTemplate = readTemplate("excerpt.html")
+	notFoundTemplate = readTemplate("404.html")
 }
 
-func readData() {
-	readTemplates()
+type Post struct {
+	title string
+	category string
+	tags vector.StringVector
+	content string
+}
+
+var posts = map[string] *Post{}
+
+type PostVisitor struct {
+	root string
+}
+
+func (v PostVisitor) VisitDir(path string, f *os.FileInfo) bool {
+	return true
+}
+
+func readPost(content string) *Post {
+	post := &Post{}
+	return post
+}
+
+func (v PostVisitor) VisitFile(path string, f *os.FileInfo) {
+	relPath := strings.Replace(path, v.root, "", 1)
+	// read in the posts
+	posts[relPath] = readPost(readFile(path))
+}
+
+func readPosts() {
+	postDir := path.Join(*blogroot, "posts")
+	walkDir(postDir, PostVisitor{postDir})
 }
 
 func TestServer(c *http.Conn, req *http.Request) {
