@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"http"
-	"io/ioutil"
 	"opts"
 	"os"
 	"path"
@@ -15,27 +14,6 @@ var blogroot = opts.Option("r",
 	"blogroot", 
 	"the root directory for blog data",
 	"/usr/share/obsidian")
-
-func ReadDir(dirname string) (ret []*os.FileInfo) {
-	ret, err := ioutil.ReadDir(dirname)
-	if err != nil {
-		// the directory doesn't exist - create it
-		err = os.MkdirAll(dirname, 0755)
-	}
-	return
-}
-
-func ReadFile(filename string) (contents string) {
-	contentarry, err := ioutil.ReadFile(filename)
-	if err != nil {
-		// the file doesn't exist - create the directory and the file
-		dirname, _ := path.Split(filename)
-		err = os.MkdirAll(dirname, 0755)
-		ioutil.WriteFile(filename, []byte{}, 0644)
-	}
-	contents = string(contentarry)
-	return
-}
 
 func main() {
 	// option setup
@@ -69,10 +47,10 @@ var (
 
 func readTemplate(name string) string {
 	templateDirectory := path.Join(*blogroot,"templates")
-	return ReadFile(path.Join(templateDirectory, name))
+	return readFile(path.Join(templateDirectory, name))
 }
 
-func readData() {
+func readTemplates() {
 	// read the templates
 	genTemplate = readTemplate("gen.html")
 	adminTemplate = readTemplate("admin.html")
@@ -80,6 +58,10 @@ func readData() {
 	postTemplate = readTemplate("post.html")
 	tagTemplate = readTemplate("tag.html")
 	categoryTemplate = readTemplate("category.html")
+}
+
+func readData() {
+	readTemplates()
 }
 
 func TestServer(c *http.Conn, req *http.Request) {
