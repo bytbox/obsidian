@@ -10,8 +10,8 @@ import (
 )
 
 var port = opts.Option("p", "port", "the port to use", "8080")
-var blogroot = opts.Option("r", 
-	"blogroot", 
+var blogroot = opts.Option("r",
+	"blogroot",
 	"the root directory for blog data",
 	"/usr/share/obsidian")
 
@@ -23,30 +23,30 @@ func main() {
 
 	fmt.Fprintf(os.Stderr, "Reading data...\n")
 	readData()
-	
+
 	fmt.Fprintf(os.Stderr, "Serving!\n")
 	// set up the extra servers
-	http.HandleFunc("/test",TestServer)
-	http.HandleFunc("/",NotFoundServer)
+	http.HandleFunc("/test", TestServer)
+	http.HandleFunc("/", NotFoundServer)
 	// start the server
 	err := http.ListenAndServe(":"+*port, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr,"%s\n",err.String())
+		fmt.Fprintf(os.Stderr, "%s\n", err.String())
 	}
 }
 
 // The various templates.
 var (
-	genTemplate string
-	adminTemplate string
-	indexTemplate string
-	postTemplate string
-	tagTemplate string
+	genTemplate      string
+	adminTemplate    string
+	indexTemplate    string
+	postTemplate     string
+	tagTemplate      string
 	categoryTemplate string
 )
 
 func readTemplate(name string) string {
-	templateDirectory := path.Join(*blogroot,"templates")
+	templateDirectory := path.Join(*blogroot, "templates")
 	return readFile(path.Join(templateDirectory, name))
 }
 
@@ -65,10 +65,10 @@ func readData() {
 }
 
 func TestServer(c *http.Conn, req *http.Request) {
-	fmt.Fprintf(c,"Hello, world!\n")
+	fmt.Fprintf(c, "Hello, world!\n")
 }
 
 func NotFoundServer(c *http.Conn, req *http.Request) {
 	c.WriteHeader(404)
-	fmt.Fprintf(c,"404 not found\n")
+	fmt.Fprintf(c, "404 not found\n")
 }
