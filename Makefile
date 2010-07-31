@@ -5,10 +5,10 @@ include ${GOROOT}/src/Make.${GOARCH}
 all: obsidian
 
 obsidian: main.${O}
-	${O}l -o $@ main.${O}
+	${LD} -o $@ main.${O}
 
 main.${O}: main.go
-	${O}g -o $@ main.go
+	${GC} -o $@ main.go
 
 clean:
 	rm obsidian *.${O}
