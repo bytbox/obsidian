@@ -2,13 +2,18 @@
 
 include ${GOROOT}/src/Make.${GOARCH}
 
+FILES = main.go util.go
+
 all: obsidian
 
 obsidian: main.${O}
 	${LD} -o $@ main.${O}
 
-main.${O}: main.go util.go
-	${GC} -o $@ main.go util.go
+main.${O}: ${FILES}
+	${GC} -o $@ ${FILES}
+
+format:
+	gofmt -w ${FILES}
 
 clean:
 	rm obsidian *.${O}
