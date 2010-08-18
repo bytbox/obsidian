@@ -16,4 +16,4 @@ format:
 	gofmt -w ${FILES}
 
 clean:
-	rm obsidian *.${O}
+	rm -f obsidian *.${O}
