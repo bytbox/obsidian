@@ -2,18 +2,20 @@
 
 include ${GOROOT}/src/Make.${GOARCH}
 
-FILES = main.go util.go
+.SUFFIXES: .go .${O}
 
 all: obsidian
+
+include Makefile.deps
 
 obsidian: main.${O}
 	${LD} -o $@ main.${O}
 
-main.${O}: ${FILES}
-	${GC} -o $@ ${FILES}
+.go.${O}:
+	${GC} -o $@ $*.go
 
 format:
-	gofmt -w ${FILES}
+	gofmt -w *.go
 
 clean:
 	rm -f obsidian *.${O}

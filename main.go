@@ -10,6 +10,8 @@ import (
 	"path"
 	"strings"
 	"template"
+	"time"
+	. "./util"
 )
 
 var port = opts.Single("p", "port", "the port to use", "8080")
@@ -19,6 +21,8 @@ var blogroot = opts.Single("r",
 	"/usr/share/obsidian")
 var showVersion = opts.Flag("", "version", "show version information")
 var verbose = opts.Flag("v", "verbose", "give verbose output")
+
+var startTime = time.Nanoseconds()
 
 var (
 	templateDir string
@@ -44,13 +48,15 @@ func startServer() {
 	log.Stdout("Starting server")
 	// set up the extra servers
 	http.HandleFunc("/", NotFoundServer)
+	log.Stdout("Server started in ",
+		(time.Nanoseconds()-startTime)/1000,
+		" microseconds")
 	// start the server
 	err := http.ListenAndServe(":"+*port, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.String())
 		panic("Could not start server")
 	}
-	log.Stdout("Server started!")
 }
 
 // The various templates.
@@ -59,7 +65,7 @@ var templates = make(map[string]*template.Template)
 func readTemplate(name string) *template.Template {
 	log.Stdout("Reading template ", name)
 	templatePath := path.Join(templateDir, name)
-	templateText := readFile(templatePath)
+	templateText := ReadFile(templatePath)
 	template, err := template.Parse(templateText, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.String())
@@ -129,13 +135,13 @@ func (v PostVisitor) VisitFile(path string, f *os.FileInfo) {
 	relPath := strings.Replace(path, v.root, "", 1)
 	log.Stdout("Reading post ", relPath)
 	// read in the posts
-	posts[relPath] = readPost(readFile(path), relPath)
+	posts[relPath] = readPost(ReadFile(path), relPath)
 }
 
 func readPosts() {
 	log.Stdout("Reading posts")
 	postDir := path.Join(*blogroot, "posts")
-	walkDir(postDir, PostVisitor{postDir})
+	WalkDir(postDir, PostVisitor{postDir})
 }
 
 func makeTags() {
@@ -146,8 +152,38 @@ func makeCategories() {
 	log.Stdout("Analyzing categories")
 }
 
-func compileAll() {
+func compilePosts() {
+	log.Stdout("Compiling posts")
+}
 
+func compileExcerpts() {
+	log.Stdout("Compiling post excerpts")
+}
+
+func compileTags() {
+	log.Stdout("Compiling tags")
+}
+
+func compileCategories() {
+	log.Stdout("Compiling categories")
+}
+
+func compileIndex() {
+	log.Stdout("Compiling index page")
+}
+
+func compile404() {
+	log.Stdout("Compiling 404 page")
+}
+
+func compileAll() {
+	log.Stdout("Compiling all")
+	compilePosts()
+	compileExcerpts()
+	compileTags()
+	compileCategories()
+	compileIndex()
+	compile404()
 }
 
 func NotFoundServer(c *http.Conn, req *http.Request) {

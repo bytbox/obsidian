@@ -1,0 +1,3 @@
+util.${O}: util.go 
+main: main.${O}
+main.${O}: main.go util.${O} 

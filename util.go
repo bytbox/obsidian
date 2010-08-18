@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"io/ioutil"
@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-func readDir(dirname string) (ret []*os.FileInfo) {
+func ReadDir(dirname string) (ret []*os.FileInfo) {
 	ret, err := ioutil.ReadDir(dirname)
 	if err != nil {
 		// the directory doesn't exist - create it
@@ -15,14 +15,14 @@ func readDir(dirname string) (ret []*os.FileInfo) {
 	return
 }
 
-func walkDir(dirname string, v path.Visitor) {
+func WalkDir(dirname string, v path.Visitor) {
 	// first make sure the directory exists
-	readDir(dirname)
+	ReadDir(dirname)
 	// now walk it
 	path.Walk(dirname, v, nil)
 }
 
-func readFile(filename string) (contents string) {
+func ReadFile(filename string) (contents string) {
 	contentarry, err := ioutil.ReadFile(filename)
 	if err != nil {
 		// the file doesn't exist - create the directory and the file
