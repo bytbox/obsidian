@@ -4,6 +4,7 @@ import (
 	"container/vector"
 	"fmt"
 	"http"
+	"io/ioutil"
 	"opts"
 	"os"
 	"path"
@@ -11,27 +12,30 @@ import (
 	"template"
 )
 
-var port = opts.Option("p", "port", "the port to use", "8080")
-var blogroot = opts.Option("r",
+var port = opts.Single("p", "port", "the port to use", "8080")
+var blogroot = opts.Single("r",
 	"blogroot",
 	"the root directory for blog data",
 	"/usr/share/obsidian")
+var showVersion = opts.Flag("", "version", "show version information")
+var verbose = opts.Flag("v", "verbose", "give verbose output")
+
+var (
+	templateDir string
+)
 
 func main() {
 	// option setup
-	opts.Description("lightweight http blog server")
+	opts.Description = "lightweight http blog server"
 	// parse and handle options
 	opts.Parse()
-
-	fmt.Fprintf(os.Stderr, "Reading data...\n")
+	
+	templateDir = path.Join(*blogroot, "templates")
+	
 	readTemplates()
 	readPosts()
-
-	fmt.Fprintf(os.Stderr, "Compiling site...\n")
-
-	fmt.Fprintf(os.Stderr, "Serving!\n")
+	
 	// set up the extra servers
-	http.HandleFunc("/test", TestServer)
 	http.HandleFunc("/", NotFoundServer)
 	// start the server
 	err := http.ListenAndServe(":"+*port, nil)
@@ -41,20 +45,10 @@ func main() {
 }
 
 // The various templates.
-var (
-	genTemplate      *template.Template
-	adminTemplate    *template.Template
-	indexTemplate    *template.Template
-	postTemplate     *template.Template
-	excerptTemplate  *template.Template
-	tagTemplate      *template.Template
-	categoryTemplate *template.Template
-	notFoundTemplate *template.Template
-)
+var templates = make(map[string]*template.Template)
 
 func readTemplate(name string) *template.Template {
-	templateDirectory := path.Join(*blogroot, "templates")
-	templatePath := path.Join(templateDirectory, name)
+	templatePath := path.Join(templateDir, name)
 	templateText := readFile(templatePath)
 	template, err := template.Parse(templateText, nil)
 	if err != nil {
@@ -66,14 +60,15 @@ func readTemplate(name string) *template.Template {
 
 func readTemplates() {
 	// read the templates
-	genTemplate = readTemplate("gen.html")
-	adminTemplate = readTemplate("admin.html")
-	indexTemplate = readTemplate("index.html")
-	postTemplate = readTemplate("post.html")
-	tagTemplate = readTemplate("tag.html")
-	categoryTemplate = readTemplate("category.html")
-	excerptTemplate = readTemplate("excerpt.html")
-	notFoundTemplate = readTemplate("404.html")
+	flist, err := ioutil.ReadDir(templateDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err.String())
+		panic("Couldn't read template directory!")
+	}
+	for _, finfo := range flist {
+		fname := strings.Replace(finfo.Name, ".html", "", -1)
+		templates[fname] = readTemplate(fname+".html")
+	}
 }
 
 type Post struct {
@@ -107,10 +102,6 @@ func (v PostVisitor) VisitFile(path string, f *os.FileInfo) {
 func readPosts() {
 	postDir := path.Join(*blogroot, "posts")
 	walkDir(postDir, PostVisitor{postDir})
-}
-
-func TestServer(c *http.Conn, req *http.Request) {
-	fmt.Fprintf(c, "Hello, world!\n")
 }
 
 func NotFoundServer(c *http.Conn, req *http.Request) {
