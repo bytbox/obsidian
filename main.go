@@ -101,6 +101,8 @@ type Category struct {
 }
 
 var posts = map[string]*Post{}
+var tags = map[string]*Tag{}
+var categories = map[string]*Category{}
 
 type PostVisitor struct {
 	root string
@@ -116,6 +118,9 @@ func readPost(content string, path string) *Post {
 	post := &Post{}
 	post.content = groups[1]
 	post.title = metalines[0]
+	for _, line := range metalines[1:] {
+		fmt.Printf(line)
+	}
 	post.url = path
 	return post
 }
