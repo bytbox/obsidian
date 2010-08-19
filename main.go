@@ -63,7 +63,7 @@ func startServer() {
 var templates = make(map[string]*template.Template)
 
 func readTemplate(name string) *template.Template {
-	log.Stdout("Reading template ", name)
+	log.Stdout("  Reading template ", name)
 	templatePath := path.Join(templateDir, name)
 	templateText := ReadFile(templatePath)
 	template, err := template.Parse(templateText, nil)
@@ -98,12 +98,12 @@ type Post struct {
 
 type Tag struct {
 	name  string
-	posts []Post
+	posts []*Post
 }
 
 type Category struct {
 	name  string
-	posts []Post
+	posts []*Post
 }
 
 var posts = map[string]*Post{}
@@ -133,7 +133,7 @@ func readPost(content string, path string) *Post {
 
 func (v PostVisitor) VisitFile(path string, f *os.FileInfo) {
 	relPath := strings.Replace(path, v.root, "", 1)
-	log.Stdout("Reading post ", relPath)
+	log.Stdout("  Reading post ", relPath)
 	// read in the posts
 	posts[relPath] = readPost(ReadFile(path), relPath)
 }
@@ -146,34 +146,73 @@ func readPosts() {
 
 func makeTags() {
 	log.Stdout("Analyzing tags")
+	for _, post := range posts {
+		for _, tagname := range post.tags {
+			if _, ok := tags[tagname]; !ok {
+				tags[tagname] = &Tag{
+					name: tagname,
+					posts: make([]*Post, 0),
+				}
+			}
+			tag := tags[tagname]
+			l := len(tag.posts)
+			if l+1 > cap(tag.posts) {
+				newSlice := make([]*Post, (l+1)*2)
+				copy(newSlice, tag.posts)
+				tag.posts = newSlice
+			}
+			tag.posts = tag.posts[0:l+1]
+			tag.posts[l] = post
+		}
+	}
 }
 
 func makeCategories() {
 	log.Stdout("Analyzing categories")
+	for _, post := range posts {
+		cname := post.category
+		if _, ok := categories[cname]; !ok {
+			if _, ok := categories[cname]; !ok {
+				categories[cname] = &Category{
+					name: cname,
+					posts: make([]*Post, 0),
+				}
+			}
+			cat := categories[cname]
+			l := len(cat.posts)
+			if l+1 > cap(cat.posts) {
+				newSlice := make([]*Post, (l+1)*2)
+				copy(newSlice, cat.posts)
+				cat.posts = newSlice
+			}
+			cat.posts = cat.posts[0:l+1]
+			cat.posts[l] = post
+		}
+	}
 }
 
 func compilePosts() {
-	log.Stdout("Compiling posts")
+	log.Stdout("  Compiling posts")
 }
 
 func compileExcerpts() {
-	log.Stdout("Compiling post excerpts")
+	log.Stdout("  Compiling post excerpts")
 }
 
 func compileTags() {
-	log.Stdout("Compiling tags")
+	log.Stdout("  Compiling tags")
 }
 
 func compileCategories() {
-	log.Stdout("Compiling categories")
+	log.Stdout("  Compiling categories")
 }
 
 func compileIndex() {
-	log.Stdout("Compiling index page")
+	log.Stdout("  Compiling index page")
 }
 
 func compile404() {
-	log.Stdout("Compiling 404 page")
+	log.Stdout("  Compiling 404 page")
 }
 
 func compileAll() {
