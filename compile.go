@@ -42,5 +42,3 @@ func CompileAll() {
 	Compile404()
 	CompileFull()
 }
-
-

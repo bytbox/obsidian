@@ -11,8 +11,8 @@ import (
 	"time"
 
 	compile "./compile"
-	.     "./data"
-	input "./input"
+	.       "./data"
+	input   "./input"
 )
 
 var port = opts.Single("p", "port", "the port to use", "8080")
