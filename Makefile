@@ -13,7 +13,7 @@ obsidian: main.${O}
 	${GC} -o $@ $*.go
 
 format:
-	gofmt -w *.go
+	gofmt -w ${GOFILES}
 
 clean:
 	rm -f obsidian *.${O}

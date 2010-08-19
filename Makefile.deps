@@ -1,4 +1,5 @@
 # external packages: time os fmt path template opts http log io/ioutil strings 
+GOFILES = main.go compile.go data.go input.go 
 compile.${O}: compile.go 
 data.${O}: data.go 
 input.${O}: input.go data.${O} 
