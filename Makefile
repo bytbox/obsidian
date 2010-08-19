@@ -1,12 +1,10 @@
 .PHONY: all clean install
 
+all: obsidian
+
 include ${GOROOT}/src/Make.${GOARCH}
 
 .SUFFIXES: .go .${O}
-
-all: obsidian
-
-include Makefile.deps
 
 obsidian: main.${O}
 	${LD} -o $@ main.${O}
@@ -19,3 +17,5 @@ format:
 
 clean:
 	rm -f obsidian *.${O}
+
+include Makefile.deps

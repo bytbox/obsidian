@@ -10,7 +10,8 @@ import (
 	"template"
 	"time"
 
-	. "./data"
+	compile "./compile"
+	.     "./data"
 	input "./input"
 )
 
@@ -42,7 +43,7 @@ func main() {
 	input.ReadPosts(postDir)
 	makeTags()
 	makeCategories()
-	compileAll()
+	compile.CompileAll()
 	startServer()
 }
 
@@ -116,45 +117,6 @@ func makeCategories() {
 			cat.Posts[l] = post
 		}
 	}
-}
-
-func compilePosts() {
-	log.Stdout("  Compiling posts")
-}
-
-func compileExcerpts() {
-	log.Stdout("  Compiling post excerpts")
-}
-
-func compileTags() {
-	log.Stdout("  Compiling tags")
-}
-
-func compileCategories() {
-	log.Stdout("  Compiling categories")
-}
-
-func compileIndex() {
-	log.Stdout("  Compiling index page")
-}
-
-func compile404() {
-	log.Stdout("  Compiling 404 page")
-}
-
-func compileFull() {
-	log.Stdout("  Compiling full pages")
-}
-
-func compileAll() {
-	log.Stdout("Compiling all")
-	compilePosts()
-	compileExcerpts()
-	compileTags()
-	compileCategories()
-	compileIndex()
-	compile404()
-	compileFull()
 }
 
 func NotFoundServer(c *http.Conn, req *http.Request) {
