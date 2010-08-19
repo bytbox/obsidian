@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 	"template"
-	
+
 	. "./data"
 )
 
@@ -64,7 +64,7 @@ func ReadTemplates(templateDir string) (templates map[string]*template.Template)
 	}
 	for _, finfo := range flist {
 		fname := strings.Replace(finfo.Name, ".html", "", -1)
-		templates[fname] = ReadTemplate(templateDir, fname + ".html")
+		templates[fname] = ReadTemplate(templateDir, fname+".html")
 	}
 	return
 }
@@ -83,7 +83,7 @@ func ReadPost(content string, path string) *Post {
 }
 
 type postVisitor struct {
-	root string
+	root  string
 	posts map[string]*Post
 }
 
@@ -104,4 +104,3 @@ func ReadPosts(postDir string) map[string]*Post {
 	walkDir(postDir, v)
 	return v.posts
 }
-

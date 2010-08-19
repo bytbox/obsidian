@@ -19,6 +19,6 @@ type Category struct {
 }
 
 type Page struct {
-	URL string
+	URL     string
 	Content string
 }

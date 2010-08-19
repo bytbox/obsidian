@@ -1,3 +1,5 @@
-util.${O}: util.go 
+# external packages: time os fmt path template opts strings http log io/ioutil 
+data.${O}: data.go 
+input.${O}: input.go 
 main: main.${O}
-main.${O}: main.go util.${O} 
+main.${O}: main.go data.${O} input.${O} 

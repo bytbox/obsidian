@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"http"
-	"io/ioutil"
 	"log"
 	"opts"
 	"os"
 	"path"
-	"strings"
 	"template"
 	"time"
-	. "./util"
+
+	. "./data"
+	input "./input"
 )
 
 var port = opts.Single("p", "port", "the port to use", "8080")
@@ -26,6 +26,7 @@ var startTime = time.Nanoseconds()
 
 var (
 	templateDir string
+	postDir     string
 )
 
 func main() {
@@ -35,9 +36,10 @@ func main() {
 	opts.Parse()
 
 	templateDir = path.Join(*blogroot, "templates")
+	postDir = path.Join(*blogroot, "posts")
 
-	readTemplates()
-	readPosts()
+	input.ReadTemplates(templateDir)
+	input.ReadPosts(postDir)
 	makeTags()
 	makeCategories()
 	compileAll()
@@ -62,107 +64,32 @@ func startServer() {
 // The various templates.
 var templates = make(map[string]*template.Template)
 
-func readTemplate(name string) *template.Template {
-	log.Stdout("  Reading template ", name)
-	templatePath := path.Join(templateDir, name)
-	templateText := ReadFile(templatePath)
-	template, err := template.Parse(templateText, nil)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.String())
-		os.Exit(1)
-	}
-	return template
-}
-
-func readTemplates() {
-	// read the templates
-	log.Stdout("Reading templates")
-	flist, err := ioutil.ReadDir(templateDir)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.String())
-		panic("Couldn't read template directory!")
-	}
-	for _, finfo := range flist {
-		fname := strings.Replace(finfo.Name, ".html", "", -1)
-		templates[fname] = readTemplate(fname + ".html")
-	}
-}
-
-type Post struct {
-	title    string
-	category string
-	tags     []string
-	content  string
-	url      string
-}
-
-type Tag struct {
-	name  string
-	posts []*Post
-}
-
-type Category struct {
-	name  string
-	posts []*Post
-}
-
-var posts = map[string]*Post{}
-var tags = map[string]*Tag{}
-var categories = map[string]*Category{}
-
-type PostVisitor struct {
-	root string
-}
-
-func (v PostVisitor) VisitDir(path string, f *os.FileInfo) bool {
-	return true
-}
-
-func readPost(content string, path string) *Post {
-	groups := strings.Split(content, "\n\n", 2)
-	metalines := strings.Split(groups[0], "\n", -1)
-	post := &Post{}
-	post.content = groups[1]
-	post.title = metalines[0]
-	for _, line := range metalines[1:] {
-		fmt.Printf(line)
-	}
-	post.url = path
-	return post
-}
-
-func (v PostVisitor) VisitFile(path string, f *os.FileInfo) {
-	relPath := strings.Replace(path, v.root, "", 1)
-	log.Stdout("  Reading post ", relPath)
-	// read in the posts
-	posts[relPath] = readPost(ReadFile(path), relPath)
-}
-
-func readPosts() {
-	log.Stdout("Reading posts")
-	postDir := path.Join(*blogroot, "posts")
-	WalkDir(postDir, PostVisitor{postDir})
-}
+var (
+	posts      = map[string]*Post{}
+	tags       = map[string]*Tag{}
+	categories = map[string]*Category{}
+	pages      = map[string]*Page{}
+)
 
 func makeTags() {
 	log.Stdout("Analyzing tags")
 	for _, post := range posts {
-		for _, tagname := range post.tags {
+		for _, tagname := range post.Tags {
 			if _, ok := tags[tagname]; !ok {
 				tags[tagname] = &Tag{
-					name: tagname,
-					posts: make([]*Post, 0),
+					Name:  tagname,
+					Posts: make([]*Post, 0),
 				}
 			}
 			tag := tags[tagname]
-			l := len(tag.posts)
-			if l+1 > cap(tag.posts) {
+			l := len(tag.Posts)
+			if l+1 > cap(tag.Posts) {
 				newSlice := make([]*Post, (l+1)*2)
-				copy(newSlice, tag.posts)
-				tag.posts = newSlice
+				copy(newSlice, tag.Posts)
+				tag.Posts = newSlice
 			}
-			tag.posts = tag.posts[0:l+1]
-			tag.posts[l] = post
+			tag.Posts = tag.Posts[0 : l+1]
+			tag.Posts[l] = post
 		}
 	}
 }
@@ -170,23 +97,23 @@ func makeTags() {
 func makeCategories() {
 	log.Stdout("Analyzing categories")
 	for _, post := range posts {
-		cname := post.category
+		cname := post.Category
 		if _, ok := categories[cname]; !ok {
 			if _, ok := categories[cname]; !ok {
 				categories[cname] = &Category{
-					name: cname,
-					posts: make([]*Post, 0),
+					Name:  cname,
+					Posts: make([]*Post, 0),
 				}
 			}
 			cat := categories[cname]
-			l := len(cat.posts)
-			if l+1 > cap(cat.posts) {
+			l := len(cat.Posts)
+			if l+1 > cap(cat.Posts) {
 				newSlice := make([]*Post, (l+1)*2)
-				copy(newSlice, cat.posts)
-				cat.posts = newSlice
+				copy(newSlice, cat.Posts)
+				cat.Posts = newSlice
 			}
-			cat.posts = cat.posts[0:l+1]
-			cat.posts[l] = post
+			cat.Posts = cat.Posts[0 : l+1]
+			cat.Posts[l] = post
 		}
 	}
 }
@@ -215,6 +142,10 @@ func compile404() {
 	log.Stdout("  Compiling 404 page")
 }
 
+func compileFull() {
+	log.Stdout("  Compiling full pages")
+}
+
 func compileAll() {
 	log.Stdout("Compiling all")
 	compilePosts()
@@ -223,6 +154,7 @@ func compileAll() {
 	compileCategories()
 	compileIndex()
 	compile404()
+	compileFull()
 }
 
 func NotFoundServer(c *http.Conn, req *http.Request) {
