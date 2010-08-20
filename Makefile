@@ -3,6 +3,7 @@
 all: obsidian
 
 include ${GOROOT}/src/Make.${GOARCH}
+include Makefile.info
 
 .SUFFIXES: .go .${O}
 
