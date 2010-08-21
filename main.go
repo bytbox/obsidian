@@ -7,7 +7,6 @@ import (
 	"opts"
 	"os"
 	"path"
-	"template"
 	"time"
 
 	compile "./compile"
@@ -62,27 +61,17 @@ func startServer() {
 	}
 }
 
-// The various templates.
-var templates = make(map[string]*template.Template)
-
-var (
-	posts      = map[string]*Post{}
-	tags       = map[string]*Tag{}
-	categories = map[string]*Category{}
-	pages      = map[string]*Page{}
-)
-
 func makeTags() {
 	log.Stdout("Analyzing tags")
-	for _, post := range posts {
+	for _, post := range Posts {
 		for _, tagname := range post.Tags {
-			if _, ok := tags[tagname]; !ok {
-				tags[tagname] = &Tag{
+			if _, ok := Tags[tagname]; !ok {
+				Tags[tagname] = &Tag{
 					Name:  tagname,
 					Posts: make([]*Post, 0),
 				}
 			}
-			tag := tags[tagname]
+			tag := Tags[tagname]
 			l := len(tag.Posts)
 			if l+1 > cap(tag.Posts) {
 				newSlice := make([]*Post, (l+1)*2)
@@ -97,16 +86,16 @@ func makeTags() {
 
 func makeCategories() {
 	log.Stdout("Analyzing categories")
-	for _, post := range posts {
+	for _, post := range Posts {
 		cname := post.Category
-		if _, ok := categories[cname]; !ok {
-			if _, ok := categories[cname]; !ok {
-				categories[cname] = &Category{
+		if _, ok := Categories[cname]; !ok {
+			if _, ok := Categories[cname]; !ok {
+				Categories[cname] = &Category{
 					Name:  cname,
 					Posts: make([]*Post, 0),
 				}
 			}
-			cat := categories[cname]
+			cat := Categories[cname]
 			l := len(cat.Posts)
 			if l+1 > cap(cat.Posts) {
 				newSlice := make([]*Post, (l+1)*2)

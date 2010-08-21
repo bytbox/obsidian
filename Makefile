@@ -11,12 +11,17 @@ obsidian: main.${O}
 	${LD} -o $@ main.${O}
 
 .go.${O}:
-	${GC} -o $@ $*.go
+	${GC} $*.go
+
+.go.a:
+	${GC} -o $*.${O} $*.go
+	gopack grc $*.a $*.${O}
+	rm $*.${O}
 
 format:
 	gofmt -w ${GOFILES}
 
 clean:
-	rm -f obsidian *.${O}
+	rm -f obsidian *.a *.${O}
 
 include Makefile.deps
