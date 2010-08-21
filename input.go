@@ -103,3 +103,7 @@ func ReadPosts(postDir string) {
 	walkDir(postDir, v)
 	Posts = v.posts
 }
+
+func ReadPages(pageDir string) {
+	
+}

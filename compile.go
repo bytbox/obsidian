@@ -7,6 +7,7 @@ import (
 	. "./data"
 )
 
+// string writer is an io.Writer implementation that just writes to a stirng
 type stringWriter struct {
 	buff string
 }
@@ -46,13 +47,30 @@ func CompileExcerpts() {
 
 func CompileTags() {
 	log.Stdout("  Compiling tags")
-	// TODO
+	// compile against the "tag" template
+	tmpl := Templates["tab"]
+	for _, tag := range Tags {
+		w := &stringWriter{}
+		tmpl.Execute(tag, w)
+		Pages["/tag/"+tag.Name] = &Page {
+			URL:     "/tag/"+tag.Name,
+			Content: w.buff,
+		}
+	}
 }
 
 func CompileCategories() {
 	log.Stdout("  Compiling categories")
-	// TODO
-}
+	// compile against the "tag" template
+	tmpl := Templates["category"]
+	for _, cat := range Categories {
+		w := &stringWriter{}
+		tmpl.Execute(cat, w)
+		Pages["/category/"+cat.Name] = &Page {
+			URL:     "/category/"+cat.Name,
+			Content: w.buff,
+		}
+	}}
 
 func CompileIndex() {
 	log.Stdout("  Compiling index page")
@@ -69,7 +87,7 @@ func CompileFull() {
 	tmpl := Templates["gen"]
 	for _, page := range Pages {
 		w := &stringWriter{}
-		tmpl.Execute(page.Content, w)
+		tmpl.Execute(page, w)
 		page.Compiled = w.buff
 	}
 }

@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"http"
 	"log"
 	"opts"
-	"os"
 	"path"
 	"time"
 
@@ -44,22 +41,11 @@ func main() {
 	makeTags()
 	makeCategories()
 	compile.CompileAll()
-	startServer()
-}
-
-func startServer() {
-	log.Stdout("Starting server")
-	// set up the extra servers
-	http.HandleFunc("/", serve.NotFoundServer)
+	serve.StartServers()
 	log.Stdout("Server started in ",
 		(time.Nanoseconds()-startTime)/1000,
 		" microseconds")
-	// start the server
-	err := http.ListenAndServe(":"+*port, nil)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.String())
-		panic("Could not start server")
-	}
+	serve.Serve(*port)
 }
 
 func makeTags() {
