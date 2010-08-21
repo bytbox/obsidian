@@ -75,9 +75,18 @@ func ReadPost(content string, path string) *Post {
 	post.Content = groups[1]
 	post.Title = metalines[0]
 	for _, line := range metalines[1:] {
-		fmt.Printf(line)
+		ind := strings.Index(line, ":")
+		if ind != -1 {
+			key, value := line[0:ind], strings.TrimSpace(line[ind+1:])
+			post.Meta[key] = value
+		}
 	}
 	post.URL = path
+	
+	// clean the post
+	if len(post.Meta["category"]) == 0 {
+		post.Meta["category"] = "General" // TODO make this configurable
+	}
 	return post
 }
 
