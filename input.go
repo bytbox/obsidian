@@ -53,8 +53,8 @@ func ReadTemplate(templateDir, name string) *template.Template {
 	return template
 }
 
-func ReadTemplates(templateDir string) (templates map[string]*template.Template) {
-	templates = make(map[string]*template.Template)
+func ReadTemplates(templateDir string) {
+	Templates = make(map[string]*template.Template)
 	// read the templates
 	log.Stdout("Reading templates")
 	flist, err := ioutil.ReadDir(templateDir)
@@ -64,9 +64,8 @@ func ReadTemplates(templateDir string) (templates map[string]*template.Template)
 	}
 	for _, finfo := range flist {
 		fname := strings.Replace(finfo.Name, ".html", "", -1)
-		templates[fname] = ReadTemplate(templateDir, fname+".html")
+		Templates[fname] = ReadTemplate(templateDir, fname+".html")
 	}
-	return
 }
 
 func ReadPost(content string, path string) *Post {
@@ -98,9 +97,9 @@ func (v postVisitor) VisitFile(path string, f *os.FileInfo) {
 	v.posts[relPath] = ReadPost(readFile(path), relPath)
 }
 
-func ReadPosts(postDir string) map[string]*Post {
+func ReadPosts(postDir string) {
 	log.Stdout("Reading posts")
 	v := postVisitor{root: postDir, posts: make(map[string]*Post)}
 	walkDir(postDir, v)
-	return v.posts
+	Posts = v.posts
 }

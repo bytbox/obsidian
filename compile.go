@@ -24,7 +24,7 @@ func CompilePosts() {
 	tmpl := Templates["post"]
 	for _, post := range Posts {
 		w := &stringWriter{}
-		tmpl.Execute(post.Content, w)
+		tmpl.Execute(post, w)
 		post.CompiledFull = w.buff
 		Pages[post.URL] = &Page{
 			URL:     post.URL,
@@ -39,7 +39,7 @@ func CompileExcerpts() {
 	tmpl := Templates["excerpt"]
 	for _, post := range Posts {
 		w := &stringWriter{}
-		tmpl.Execute(post.Content, w) // TODO get excerpt
+		tmpl.Execute(post, w) // TODO get excerpt
 		post.CompiledExcerpt = w.buff
 	}
 }
