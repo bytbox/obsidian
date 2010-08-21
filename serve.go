@@ -3,15 +3,20 @@ package serve
 import (
 	"fmt"
 	"http"
+	"io/ioutil"
 	"log"
+	"mime"
 	"os"
+	"path"
 	
 	"./data"
 )
 
 // startDataServers starts a server for every entry in data.Data
-func startDataServers() {
-	
+func startFileServers() {
+	for url, loc := range data.Data {
+		http.Handle(url, FileServer{loc})
+	}
 }
 
 // startPageServers starts a server for every entry in data.Pages
@@ -30,7 +35,7 @@ func startMisc() {
 
 func StartServers() {
 	log.Stdout("Starting servers")
-	startDataServers()
+	startFileServers()
 	startPageServers()
 	startMisc()
 }
@@ -57,4 +62,20 @@ type PageServer struct {
 
 func (p PageServer) ServeHTTP(c *http.Conn, req *http.Request) {
 	fmt.Fprint(c, p.Page.Compiled)
+}
+
+type FileServer struct {
+	loc string
+}
+
+func (s FileServer) ServeHTTP(c *http.Conn, req *http.Request) {
+	content, err := ioutil.ReadFile(s.loc)
+	if err != nil {
+		log.Stderr(err)
+	} else {
+		// get mime type
+		mimeType := mime.TypeByExtension(path.Ext(s.loc))
+		c.SetHeader("Content-Type", mimeType)
+		fmt.Fprintf(c, "%s", content)
+	}
 }

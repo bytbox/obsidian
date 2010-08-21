@@ -125,10 +125,9 @@ func ReadPages(pageDir string) {
 }
 
 
-// dataVisitor is used to havigate the directory of posts and create posts
+// dataVisitor is used to havigate the directory of data
 type dataVisitor struct {
 	root  string
-	posts map[string]*Post
 }
 
 func (v dataVisitor) VisitDir(path string, f *os.FileInfo) bool {
@@ -138,10 +137,13 @@ func (v dataVisitor) VisitDir(path string, f *os.FileInfo) bool {
 func (v dataVisitor) VisitFile(path string, f *os.FileInfo) {
 	// get a clean path
 	relPath := strings.Replace(path, v.root, "", 1)
-	log.Stdout("  Reading post ", relPath)
-	// read in the posts
+	// note the location of this datum
+	Data[relPath] = path
 }
+
 // ReadData reads all raw data from the given directory
 func ReadData(dataDir string) {
 	log.Stdout("Reading data")
+	v := dataVisitor{root: dataDir}
+	walkDir(dataDir, v)
 }

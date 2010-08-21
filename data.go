@@ -4,6 +4,7 @@ import (
 	"template"
 )
 
+// Post represents a single blog post, with certain pre-specified meta-data.
 type Post struct {
 	Title    string
 	Category string
@@ -39,5 +40,6 @@ var (
 	Tags       = map[string]*Tag{}
 	Categories = map[string]*Category{}
 	Pages      = map[string]*Page{}
-	Templates  = make(map[string]*template.Template)
+	Templates  = map[string]*template.Template{}
+	Data       = map[string]string{}
 )
