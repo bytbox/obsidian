@@ -1,6 +1,7 @@
-# external packages: time os fmt path template opts http log io/ioutil strings 
+# external packages: time os fmt path opts http log template io/ioutil strings 
 compile.a: compile.go data.a 
 data.a: data.go 
 input.a: input.go data.a 
+serve.a: serve.go 
 main: main.${O}
-main.${O}: main.go compile.a data.a input.a 
+main.${O}: main.go compile.a data.a input.a serve.a 

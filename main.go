@@ -12,6 +12,7 @@ import (
 	compile "./compile"
 	.       "./data"
 	input   "./input"
+	serve   "./serve"
 )
 
 var port = opts.Single("p", "port", "the port to use", "8080")
@@ -49,7 +50,7 @@ func main() {
 func startServer() {
 	log.Stdout("Starting server")
 	// set up the extra servers
-	http.HandleFunc("/", NotFoundServer)
+	http.HandleFunc("/", serve.NotFoundServer)
 	log.Stdout("Server started in ",
 		(time.Nanoseconds()-startTime)/1000,
 		" microseconds")
@@ -106,10 +107,4 @@ func makeCategories() {
 			cat.Posts[l] = post
 		}
 	}
-}
-
-func NotFoundServer(c *http.Conn, req *http.Request) {
-	log.Stderr("404 when serving", req.URL.String())
-	c.WriteHeader(404)
-	fmt.Fprintf(c, "404 not found\n")
 }
