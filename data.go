@@ -9,6 +9,7 @@ type Post struct {
 	Category string
 	Tags     []string
 	Content  string
+	Meta     map[string]string
 	URL      string
 	CompiledFull string
 	CompiledExcerpt string
@@ -26,6 +27,8 @@ type Category struct {
 
 type Page struct {
 	URL     string
+	Title   string
+	Meta    map[string]string
 	Content string
 	Compiled string
 }
