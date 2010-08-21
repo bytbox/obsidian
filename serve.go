@@ -9,6 +9,11 @@ import (
 	"./data"
 )
 
+// startDataServers starts a server for every entry in data.Data
+func startDataServers() {
+	
+}
+
 // startPageServers starts a server for every entry in data.Pages
 func startPageServers() {
 	for _, page := range data.Pages {
@@ -25,6 +30,7 @@ func startMisc() {
 
 func StartServers() {
 	log.Stdout("Starting servers")
+	startDataServers()
 	startPageServers()
 	startMisc()
 }

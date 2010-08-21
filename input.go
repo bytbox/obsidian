@@ -93,6 +93,7 @@ func ReadPost(content string, path string) *Post {
 	return post
 }
 
+// postVisitor is used to havigate the directory of posts and create posts
 type postVisitor struct {
 	root  string
 	posts map[string]*Post
@@ -103,12 +104,14 @@ func (v postVisitor) VisitDir(path string, f *os.FileInfo) bool {
 }
 
 func (v postVisitor) VisitFile(path string, f *os.FileInfo) {
+	// get a clean path
 	relPath := strings.Replace(path, v.root, "", 1)
 	log.Stdout("  Reading post ", relPath)
 	// read in the posts
 	v.posts[relPath] = ReadPost(readFile(path), relPath)
 }
 
+// ReadPosts reads all the posts from the given directory
 func ReadPosts(postDir string) {
 	log.Stdout("Reading posts")
 	v := postVisitor{root: postDir, posts: make(map[string]*Post)}
@@ -116,6 +119,29 @@ func ReadPosts(postDir string) {
 	Posts = v.posts
 }
 
+// ReadPages reads all raw pages from the given directory
 func ReadPages(pageDir string) {
-	
+	log.Stdout("Reading pages")
+}
+
+
+// dataVisitor is used to havigate the directory of posts and create posts
+type dataVisitor struct {
+	root  string
+	posts map[string]*Post
+}
+
+func (v dataVisitor) VisitDir(path string, f *os.FileInfo) bool {
+	return true
+}
+
+func (v dataVisitor) VisitFile(path string, f *os.FileInfo) {
+	// get a clean path
+	relPath := strings.Replace(path, v.root, "", 1)
+	log.Stdout("  Reading post ", relPath)
+	// read in the posts
+}
+// ReadData reads all raw data from the given directory
+func ReadData(dataDir string) {
+	log.Stdout("Reading data")
 }

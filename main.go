@@ -25,6 +25,8 @@ var startTime = time.Nanoseconds()
 var (
 	templateDir string
 	postDir     string
+	pageDir     string
+	dataDir     string
 )
 
 func main() {
@@ -35,9 +37,13 @@ func main() {
 
 	templateDir = path.Join(*blogroot, "templates")
 	postDir = path.Join(*blogroot, "posts")
+	pageDir = path.Join(*blogroot, "pages")
+	dataDir = path.Join(*blogroot, "data")
 
 	input.ReadTemplates(templateDir)
 	input.ReadPosts(postDir)
+	input.ReadPages(pageDir)
+	input.ReadData(dataDir)
 	makeTags()
 	makeCategories()
 	compile.CompileAll()
