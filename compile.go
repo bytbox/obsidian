@@ -90,7 +90,10 @@ func CompileFull() {
 	tmpl := Templates["gen"]
 	for _, page := range Pages {
 		w := &stringWriter{}
-		tmpl.Execute(page, w)
+		tmpl.Execute(map[string]interface{}{
+			"Page": page,
+			"Config": nil,
+		}, w)
 		page.Compiled = w.buff
 	}
 }
