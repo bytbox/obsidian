@@ -2,6 +2,7 @@ package markdown
 
 import (
 	"exec"
+	"io/ioutil"
 	"os"
 )
 
@@ -27,7 +28,13 @@ func Format(md string) (html string, err os.Error) {
 	if err != nil {
 		return
 	}
+	cmd.Stdin.WriteString(md)
 	cmd.Stdin.Close()
+	b, err := ioutil.ReadAll(cmd.Stdout)
+	if err != nil {
+		return
+	}
+	html = string(b)
 	_, err = cmd.Wait(0)
 	return
 }
