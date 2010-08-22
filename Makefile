@@ -5,6 +5,9 @@ all: obsidian
 include ${GOROOT}/src/Make.${GOARCH}
 include Makefile.info
 
+GOPACKAGES = ${GOFILES:.go=.${O}}
+GOARCHIVES = ${GOFILES:.go=.a}
+
 .SUFFIXES: .go .${O}
 
 obsidian: main.${O}
@@ -22,6 +25,6 @@ format:
 	gofmt -w ${GOFILES}
 
 clean:
-	rm -f obsidian *.a *.${O}
+	rm -f obsidian ${GOPACKAGES} ${GOARCHIVES}
 
 include Makefile.deps
