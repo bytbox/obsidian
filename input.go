@@ -10,6 +10,7 @@ import (
 	"template"
 
 	. "./data"
+	markdown "./markdown"
 )
 
 func readDir(dirname string) (ret []*os.FileInfo) {
@@ -72,7 +73,7 @@ func ReadPost(content string, path string) *Post {
 	groups := strings.Split(content, "\n\n", 2)
 	metalines := strings.Split(groups[0], "\n", -1)
 	post := &Post{}
-	post.Content = groups[1]
+	post.Content, _ = markdown.Format(groups[1])
 	post.Title = metalines[0]
 	post.Meta = make(map[string]string)
 	for _, line := range metalines[1:] {
