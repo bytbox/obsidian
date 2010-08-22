@@ -65,7 +65,7 @@ func (p PageServer) ServeHTTP(c *http.Conn, req *http.Request) {
 }
 
 type FileServer struct {
-	loc string
+	loc string // TODO implement a proper cache
 }
 
 func (s FileServer) ServeHTTP(c *http.Conn, req *http.Request) {
@@ -74,7 +74,7 @@ func (s FileServer) ServeHTTP(c *http.Conn, req *http.Request) {
 		log.Stderr(err)
 	} else {
 		// get mime type
-		mimeType := mime.TypeByExtension(path.Ext(s.loc))
+		mimeType := mime.TypeByExtension(path.Ext(s.loc)) // TODO cache this
 		c.SetHeader("Content-Type", mimeType)
 		fmt.Fprintf(c, "%s", content)
 	}

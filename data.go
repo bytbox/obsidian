@@ -10,6 +10,7 @@ type Post struct {
 	Category string
 	Tags     []string
 	Content  string
+	Excerpt  string
 	Meta     map[string]string
 	URL      string
 	CompiledFull string

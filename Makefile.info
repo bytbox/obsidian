@@ -1,1 +1,4 @@
-GOFILES = compile.go data.go input.go main.go 
+GOFILES = compile.go data.go input.go main.go serve.go 
+GOPKGS = main compile data input serve 
+GOPACKAGES = ${GOPKGS:=.${O}}
+GOARCHIVES = ${GOPKGS:=.a}

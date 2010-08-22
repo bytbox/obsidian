@@ -3,6 +3,7 @@ package compile
 import (
 	"log"
 	"os"
+	"strings"
 
 	. "./data"
 )
@@ -39,8 +40,10 @@ func CompileExcerpts() {
 	// compile against the "excerpt" template
 	tmpl := Templates["excerpt"]
 	for _, post := range Posts {
+		// extract excerpt
+		post.Excerpt = strings.Split(post.Content, "<!--more-->", 2)[0]
 		w := &stringWriter{}
-		tmpl.Execute(post, w) // TODO get excerpt
+		tmpl.Execute(post, w)
 		post.CompiledExcerpt = w.buff
 	}
 }
