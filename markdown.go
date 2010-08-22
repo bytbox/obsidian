@@ -7,6 +7,9 @@ import (
 
 // Format takes a markdown-formatted string and returns an equivalent
 // HTML-formatted string.
+//
+// TODO write built-in markdown implementation, to avoid forking for every 
+// post
 func Format(md string) (html string, err os.Error) {
 	cmdName, err := exec.LookPath("markdown")
 	if err != nil {
