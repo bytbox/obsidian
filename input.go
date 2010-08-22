@@ -120,9 +120,44 @@ func ReadPosts(postDir string) {
 	Posts = v.posts
 }
 
+// pageVisitor is used to havigate the directory of posts and create posts
+type pageVisitor struct {
+	root  string
+}
+
+func (v pageVisitor) VisitDir(path string, f *os.FileInfo) bool { return true }
+
+func (v pageVisitor) VisitFile(path string, f *os.FileInfo) {
+	// get a clean path
+	relPath := strings.Replace(path, v.root, "", 1)
+	log.Stdout("  Reading page ", relPath)
+	// read in the posts
+	Pages[relPath] = ReadPage(readFile(path), relPath)
+}
+
+func ReadPage(content string, path string) *Page {
+	groups := strings.Split(content, "\n\n", 2)
+	metalines := strings.Split(groups[0], "\n", -1)
+	page := &Page{}
+	page.Content, _ = markdown.Format(groups[1])
+	page.Title = metalines[0]
+	page.Meta = make(map[string]string)
+	for _, line := range metalines[1:] {
+		ind := strings.Index(line, ":")
+		if ind != -1 {
+			key, value := line[0:ind], strings.TrimSpace(line[ind+1:])
+			page.Meta[strings.ToLower(key)] = value
+		}
+	}
+	page.URL = path
+	return page
+}
+
 // ReadPages reads all raw pages from the given directory
 func ReadPages(pageDir string) {
 	log.Stdout("Reading pages")
+	v := pageVisitor{pageDir}
+	walkDir(pageDir, v)
 }
 
 

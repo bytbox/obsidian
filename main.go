@@ -7,6 +7,7 @@ import (
 	"time"
 
 	compile "./compile"
+	config  "./config"
 	.       "./data"
 	input   "./input"
 	serve   "./serve"
@@ -40,6 +41,7 @@ func main() {
 	pageDir = path.Join(*blogroot, "pages")
 	dataDir = path.Join(*blogroot, "data")
 
+	config.ReadConfig()
 	input.ReadTemplates(templateDir)
 	input.ReadPosts(postDir)
 	input.ReadPages(pageDir)

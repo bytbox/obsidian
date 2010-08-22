@@ -14,9 +14,7 @@ obsidian: main.${O}
 	${GC} $*.go
 
 .go.a:
-	${GC} -o $*.${O} $*.go
-	gopack grc $*.a $*.${O}
-	rm $*.${O}
+	${GC} -o $*.${O} $*.go && gopack grc $*.a $*.${O}
 
 format:
 	gofmt -w ${GOFILES}

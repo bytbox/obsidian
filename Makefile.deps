@@ -1,8 +1,9 @@
-# external packages: os exec time path opts log strings template fmt io/ioutil http mime 
+# external packages: log os io/ioutil exec time path opts strings template fmt http mime 
+config.a: config.go 
 markdown.a: markdown.go 
 compile.a: compile.go data.a 
 data.a: data.go 
 input.a: input.go markdown.a data.a 
 serve.a: serve.go data.a 
 main: main.${O}
-main.${O}: main.go compile.a data.a input.a serve.a 
+main.${O}: main.go config.a compile.a data.a input.a serve.a 
