@@ -28,7 +28,7 @@ func Tidy(str string) (html string, err os.Error) {
 	// bit by indenting
 	indent := 0 // the current indent level
 	token, err := parser.Token()
-	for err != os.EOF {
+	for err == nil {
 		switch token.(type) {
 		case xml.StartElement:
 			elem := token.(xml.StartElement)
@@ -63,11 +63,15 @@ func Tidy(str string) (html string, err os.Error) {
 			directive := token.(xml.Directive)
 			html += "<!"+bytes.NewBuffer(directive).String()+">"
 		default:
-			// yikes! Note the crisis, but pretend to keep working
-			os.Stderr.WriteString("Unknown token type\n")
+			// yikes! Not much to do about this...
 		}
 		token, err = parser.Token()
 	}
-	return 
+	if err != os.EOF {
+		// return the original string
+		return str, err
+	}
+	err = nil
+	return
 }
 

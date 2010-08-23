@@ -80,7 +80,7 @@ func ReadPost(content string, path string) *Post {
 		ind := strings.Index(line, ":")
 		if ind != -1 {
 			key, value := line[0:ind], strings.TrimSpace(line[ind+1:])
-			post.Meta[strings.ToLower(key)] = value
+			post.Meta[strings.Title(key)] = value
 		}
 	}
 	post.URL = path
@@ -146,7 +146,7 @@ func ReadPage(content string, path string) *Page {
 		ind := strings.Index(line, ":")
 		if ind != -1 {
 			key, value := line[0:ind], strings.TrimSpace(line[ind+1:])
-			page.Meta[strings.ToLower(key)] = value
+			page.Meta[strings.Title(key)] = value
 		}
 	}
 	page.URL = path

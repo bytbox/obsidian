@@ -84,7 +84,9 @@ func CompileIndex() {
 	// compile list of all pages against the "index" template
 	tmpl := Templates["index"]
 	w := &stringWriter{}
-	tmpl.Execute(Pages, w)
+	tmpl.Execute(map[string]interface{}{
+		"Posts": Posts,
+	}, w)
 	Pages["/"] = &Page {
 		URL:     "/",
 		Content: w.buff,
