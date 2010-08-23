@@ -7,6 +7,7 @@ import (
 
 	config "./config"
 	. "./data"
+	tidy "./tidy"
 )
 
 // string writer is an io.Writer implementation that just writes to a stirng
@@ -97,7 +98,7 @@ func CompileFull() {
 			"Page": page,
 			"Config": config.Configuration,
 		}, w)
-		page.Compiled = w.buff
+		page.Compiled, _ = tidy.Tidy(w.buff)
 	}
 }
 

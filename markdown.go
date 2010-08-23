@@ -35,6 +35,6 @@ func Format(md string) (html string, err os.Error) {
 		return
 	}
 	html = string(b)
-	_, err = cmd.Wait(0)
+	err = cmd.Close()
 	return
 }
