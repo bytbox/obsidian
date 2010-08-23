@@ -34,6 +34,11 @@ func Tidy(str string) (html string, err os.Error) {
 			elem := token.(xml.StartElement)
 			for i := 0; i < indent; i++ { html += indentation }
 			html += "<"+String(elem.Name)
+			for _, attr := range elem.Attr {
+				html += fmt.Sprintf(" %s=\"%s\"", 
+					String(attr.Name),
+					attr.Value)
+			}
 			html += ">\n"
 			indent++
 		case xml.EndElement:
