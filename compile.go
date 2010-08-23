@@ -81,7 +81,14 @@ func CompileCategories() {
 
 func CompileIndex() {
 	log.Stdout("  Compiling index page")
-	// TODO
+	// compile list of all pages against the "index" template
+	tmpl := Templates["index"]
+	w := &stringWriter{}
+	tmpl.Execute(Pages, w)
+	Pages["/"] = &Page {
+		URL:     "/",
+		Content: w.buff,
+	}
 }
 
 func Compile404() {

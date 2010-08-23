@@ -30,7 +30,7 @@ func startPageServers() {
 //
 //  NotFoundServer        serves 404 error pages
 func startMisc() {
-	http.HandleFunc("/", NotFoundServer)
+	//http.HandleFunc("/", NotFoundServer)
 }
 
 func StartServers() {
@@ -61,7 +61,11 @@ type PageServer struct {
 }
 
 func (p PageServer) ServeHTTP(c *http.Conn, req *http.Request) {
-	fmt.Fprint(c, p.Page.Compiled)
+	if p.Page.URL == req.RawURL {
+		fmt.Fprint(c, p.Page.Compiled)		
+	} else {
+		NotFoundServer(c, req)
+	}
 }
 
 type FileServer struct {
