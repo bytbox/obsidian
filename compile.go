@@ -95,17 +95,29 @@ func CompileIndex() {
 
 func Compile404() {
 	log.Stdout("  Compiling 404 page")
-	// TODO
+	tmpl := Templates["404"]
+	w := &stringWriter{}
+	tmpl.Execute(map[string]interface{}{
+		"Config": config.Configuration,
+	}, w)
+	Pages["/404"] = &Page {
+		URL:     "/-", // prevent 404 page from ever being served as a valid page
+		Content: w.buff,
+	}
 }
 
 func CompileFull() {
 	log.Stdout("  Compiling full pages")
+	// Compile all pages against the "gen" template
 	tmpl := Templates["gen"]
 	for _, page := range Pages {
 		w := &stringWriter{}
 		tmpl.Execute(map[string]interface{}{
 			"Page": page,
 			"Config": config.Configuration,
+			"Pages": Pages,
+			"Tags": Tags,
+			"Categories": Categories,
 		}, w)
 		page.Compiled, _ = tidy.Tidy(w.buff)
 	}

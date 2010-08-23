@@ -53,7 +53,7 @@ func Serve(port string) {
 var NotFoundServer = func(c *http.Conn, req *http.Request) {
 	log.Stderr("404 when serving", req.URL.String())
 	c.WriteHeader(404)
-	fmt.Fprint(c, "404 not found\n")
+	fmt.Fprint(c, data.Pages["/404"].Compiled)
 }
 
 type PageServer struct {
