@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	config "./config"
 	. "./data"
 )
 
@@ -30,6 +31,7 @@ func CompilePosts() {
 		post.CompiledFull = w.buff
 		Pages[post.URL] = &Page{
 			URL:     post.URL,
+			Title:   post.Title,
 			Content: w.buff,
 		}
 	}
@@ -73,7 +75,8 @@ func CompileCategories() {
 			URL:     "/category/"+cat.Name,
 			Content: w.buff,
 		}
-	}}
+	}
+}
 
 func CompileIndex() {
 	log.Stdout("  Compiling index page")
@@ -92,7 +95,7 @@ func CompileFull() {
 		w := &stringWriter{}
 		tmpl.Execute(map[string]interface{}{
 			"Page": page,
-			"Config": nil,
+			"Config": config.Configuration,
 		}, w)
 		page.Compiled = w.buff
 	}

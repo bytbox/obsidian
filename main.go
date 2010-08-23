@@ -24,6 +24,7 @@ var verbose = opts.Flag("v", "verbose", "give verbose output")
 var startTime = time.Nanoseconds()
 
 var (
+	confFile string
 	templateDir string
 	postDir     string
 	pageDir     string
@@ -36,12 +37,13 @@ func main() {
 	// parse and handle options
 	opts.Parse()
 
+	confFile = path.Join(*blogroot, "config")
 	templateDir = path.Join(*blogroot, "templates")
 	postDir = path.Join(*blogroot, "posts")
 	pageDir = path.Join(*blogroot, "pages")
 	dataDir = path.Join(*blogroot, "data")
 
-	config.ReadConfig()
+	config.ReadConfig(confFile)
 	input.ReadTemplates(templateDir)
 	input.ReadPosts(postDir)
 	input.ReadPages(pageDir)

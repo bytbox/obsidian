@@ -1,7 +1,7 @@
 # external packages: log os io/ioutil exec time path opts strings template fmt http mime 
 config.a: config.go 
 markdown.a: markdown.go 
-compile.a: compile.go data.a 
+compile.a: compile.go config.a data.a 
 data.a: data.go 
 input.a: input.go markdown.a data.a 
 serve.a: serve.go data.a 
