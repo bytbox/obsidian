@@ -9,7 +9,7 @@ import (
 	"os"
 	"path"
 	
-	"./data"
+	"./src/data"
 )
 
 // startDataServers starts a server for every entry in data.Data

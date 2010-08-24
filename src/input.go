@@ -9,8 +9,8 @@ import (
 	"strings"
 	"template"
 
-	. "./data"
-	markdown "./markdown"
+	. "./src/data"
+	markdown "./src/markdown"
 )
 
 func readDir(dirname string) (ret []*os.FileInfo) {

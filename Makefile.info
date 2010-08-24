@@ -1,4 +1,5 @@
-GOFILES = compile.go data.go input.go main.go serve.go 
-GOPKGS = main compile data input serve 
+# Auto-generated - DO NOT MODIFY
+GOFILES = src/compile.go src/config.go src/data.go src/input.go src/main.go src/markdown.go src/serve.go src/tidy.go 
+GOPKGS = src/config src/markdown src/main src/compile src/data src/input src/tidy src/serve 
 GOPACKAGES = ${GOPKGS:=.${O}}
 GOARCHIVES = ${GOPKGS:=.a}

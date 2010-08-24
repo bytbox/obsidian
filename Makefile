@@ -5,13 +5,13 @@ all: obsidian
 include ${GOROOT}/src/Make.${GOARCH}
 include Makefile.info
 
-.SUFFIXES: .go .${O}
+.SUFFIXES: .go .${O} .a
 
-obsidian: main.${O}
-	${LD} -o $@ main.${O}
+obsidian: src/main.${O}
+	${LD} -o $@ src/main.${O}
 
 .go.${O}:
-	${GC} $*.go
+	${GC} -o $*.${O} $*.go
 
 .go.a:
 	${GC} -o $*.${O} $*.go && gopack grc $*.a $*.${O}
@@ -19,7 +19,13 @@ obsidian: main.${O}
 format:
 	gofmt -w ${GOFILES}
 
-clean:
-	rm -f obsidian ${GOPACKAGES} ${GOARCHIVES}
+cleanpackages:
+	rm -f ${GOPACKAGES}
+
+cleanarchives:
+	rm -f ${GOARCHIVES}
+
+clean: cleanpackages cleanarchives
+	rm -f obsidian
 
 include Makefile.deps

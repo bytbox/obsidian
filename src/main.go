@@ -6,11 +6,11 @@ import (
 	"path"
 	"time"
 
-	compile "./compile"
-	config  "./config"
-	.       "./data"
-	input   "./input"
-	serve   "./serve"
+	compile "./src/compile"
+	config  "./src/config"
+	.       "./src/data"
+	input   "./src/input"
+	serve   "./src/serve"
 )
 
 var port = opts.Single("p", "port", "the port to use", "8080")

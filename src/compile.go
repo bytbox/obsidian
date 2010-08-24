@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	config "./config"
-	. "./data"
-	tidy "./tidy"
+	config "./src/config"
+	. "./src/data"
+	tidy "./src/tidy"
 )
 
 // string writer is an io.Writer implementation that just writes to a stirng
@@ -95,14 +95,15 @@ func CompileIndex() {
 
 func Compile404() {
 	log.Stdout("  Compiling 404 page")
-	tmpl := Templates["404"]
-	w := &stringWriter{}
-	tmpl.Execute(map[string]interface{}{
-		"Config": config.Configuration,
-	}, w)
-	Pages["/404"] = &Page {
-		URL:     "/-", // prevent 404 page from ever being served as a valid page
-		Content: w.buff,
+	if tmpl, ok := Templates["404"]; ok {
+		w := &stringWriter{}
+		tmpl.Execute(map[string]interface{}{
+			"Config": config.Configuration,
+		}, w)
+		Pages["/404"] = &Page {
+			URL:     "/-", // prevent 404 page from ever being served as a valid page
+			Content: w.buff,
+		}
 	}
 }
 

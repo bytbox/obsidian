@@ -1,10 +1,11 @@
-# external packages: io/ioutil strings log os exec time path opts template fmt http mime 
-config.a: config.go 
-markdown.a: markdown.go 
-compile.a: compile.go config.a data.a tidy.a 
-data.a: data.go 
-input.a: input.go markdown.a data.a 
-tidy.a: tidy.go 
-serve.a: serve.go data.a 
-main: main.${O}
-main.${O}: main.go config.a compile.a data.a input.a serve.a 
+# Auto-generated - DO NOT MODIFY
+# external packages: io/ioutil strings log os exec time path opts template fmt xml bytes http mime 
+src/config.a: src/config.go 
+src/markdown.a: src/markdown.go 
+src/compile.a: src/compile.go src/config.a src/data.a src/tidy.a 
+src/data.a: src/data.go 
+src/input.a: src/input.go src/markdown.a src/data.a 
+src/tidy.a: src/tidy.go 
+src/serve.a: src/serve.go src/data.a 
+src/main: src/main.${O}
+src/main.${O}: src/main.go src/config.a src/compile.a src/data.a src/input.a src/serve.a 
