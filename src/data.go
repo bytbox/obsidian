@@ -6,14 +6,14 @@ import (
 
 // Post represents a single blog post, with certain pre-specified meta-data.
 type Post struct {
-	Title    string
-	Category string
-	Tags     []string
-	Content  string
-	Excerpt  string
-	Meta     map[string]string
-	URL      string
-	CompiledFull string
+	Title           string
+	Category        string
+	Tags            []string
+	Content         string
+	Excerpt         string
+	Meta            map[string]string
+	URL             string
+	CompiledFull    string
 	CompiledExcerpt string
 }
 
@@ -28,10 +28,10 @@ type Category struct {
 }
 
 type Page struct {
-	URL     string
-	Title   string
-	Meta    map[string]string
-	Content string
+	URL      string
+	Title    string
+	Meta     map[string]string
+	Content  string
 	Compiled string
 }
 

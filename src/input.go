@@ -9,15 +9,15 @@ import (
 	"strings"
 	"template"
 
-	. "./src/data"
+	.        "./src/data"
 	markdown "./src/markdown"
 )
 
 func readDir(dirname string) (ret []*os.FileInfo) {
 	ret, err := ioutil.ReadDir(dirname)
 	if err != nil {
-		// the directory doesn't exist - create it
-		err = os.MkdirAll(dirname, 0755)
+		// the directory doesn't exist - panic
+		panic(err)
 	}
 	return
 }
@@ -32,10 +32,8 @@ func walkDir(dirname string, v path.Visitor) {
 func readFile(filename string) (contents string) {
 	contentarry, err := ioutil.ReadFile(filename)
 	if err != nil {
-		// the file doesn't exist - create the directory and the file
-		dirname, _ := path.Split(filename)
-		err = os.MkdirAll(dirname, 0755)
-		ioutil.WriteFile(filename, []byte{}, 0644)
+		// the file doesn't exist - panic
+		panic(err)
 	}
 	contents = string(contentarry)
 	return
@@ -48,8 +46,7 @@ func ReadTemplate(templateDir, name string) *template.Template {
 	templateText := readFile(templatePath)
 	template, err := template.Parse(templateText, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.String())
-		os.Exit(1)
+		panic(err)
 	}
 	return template
 }
@@ -84,7 +81,7 @@ func ReadPost(content string, path string) *Post {
 		}
 	}
 	post.URL = path
-	
+
 	// clean the post
 	if len(post.Meta["category"]) == 0 {
 		post.Category = "General" // TODO make this configurable
@@ -122,7 +119,7 @@ func ReadPosts(postDir string) {
 
 // pageVisitor is used to havigate the directory of posts and create posts
 type pageVisitor struct {
-	root  string
+	root string
 }
 
 func (v pageVisitor) VisitDir(path string, f *os.FileInfo) bool { return true }
@@ -163,7 +160,7 @@ func ReadPages(pageDir string) {
 
 // dataVisitor is used to havigate the directory of data
 type dataVisitor struct {
-	root  string
+	root string
 }
 
 func (v dataVisitor) VisitDir(path string, f *os.FileInfo) bool {

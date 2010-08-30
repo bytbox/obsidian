@@ -8,7 +8,7 @@ import (
 	"mime"
 	"os"
 	"path"
-	
+
 	"./src/data"
 )
 
@@ -62,7 +62,7 @@ type PageServer struct {
 
 func (p PageServer) ServeHTTP(c *http.Conn, req *http.Request) {
 	if p.Page.URL == req.RawURL {
-		fmt.Fprint(c, p.Page.Compiled)		
+		fmt.Fprint(c, p.Page.Compiled)
 	} else {
 		NotFoundServer(c, req)
 	}

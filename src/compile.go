@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	config "./src/config"
-	. "./src/data"
-	tidy "./src/tidy"
+	.      "./src/data"
+	tidy   "./src/tidy"
 )
 
 // string writer is an io.Writer implementation that just writes to a stirng
@@ -28,7 +28,11 @@ func CompilePosts() {
 	tmpl := Templates["post"]
 	for _, post := range Posts {
 		w := &stringWriter{}
-		tmpl.Execute(post, w)
+		tmpl.Execute(map[string]interface{}{
+			"Post":   post,
+			"Config": config.Configuration,
+		},
+			w)
 		post.CompiledFull = w.buff
 		Pages[post.URL] = &Page{
 			URL:     post.URL,
@@ -58,8 +62,8 @@ func CompileTags() {
 	for _, tag := range Tags {
 		w := &stringWriter{}
 		tmpl.Execute(tag, w)
-		Pages["/tag/"+tag.Name] = &Page {
-			URL:     "/tag/"+tag.Name,
+		Pages["/tag/"+tag.Name] = &Page{
+			URL:     "/tag/" + tag.Name,
 			Content: w.buff,
 		}
 	}
@@ -72,8 +76,8 @@ func CompileCategories() {
 	for _, cat := range Categories {
 		w := &stringWriter{}
 		tmpl.Execute(cat, w)
-		Pages["/category/"+cat.Name] = &Page {
-			URL:     "/category/"+cat.Name,
+		Pages["/category/"+cat.Name] = &Page{
+			URL:     "/category/" + cat.Name,
 			Content: w.buff,
 		}
 	}
@@ -86,8 +90,9 @@ func CompileIndex() {
 	w := &stringWriter{}
 	tmpl.Execute(map[string]interface{}{
 		"Posts": Posts,
-	}, w)
-	Pages["/"] = &Page {
+	},
+		w)
+	Pages["/"] = &Page{
 		URL:     "/",
 		Content: w.buff,
 	}
@@ -99,8 +104,9 @@ func Compile404() {
 		w := &stringWriter{}
 		tmpl.Execute(map[string]interface{}{
 			"Config": config.Configuration,
-		}, w)
-		Pages["/404"] = &Page {
+		},
+			w)
+		Pages["/404"] = &Page{
 			URL:     "/-", // prevent 404 page from ever being served as a valid page
 			Content: w.buff,
 		}
@@ -114,12 +120,13 @@ func CompileFull() {
 	for _, page := range Pages {
 		w := &stringWriter{}
 		tmpl.Execute(map[string]interface{}{
-			"Page": page,
-			"Config": config.Configuration,
-			"Pages": Pages,
-			"Tags": Tags,
+			"Page":       page,
+			"Config":     config.Configuration,
+			"Pages":      Pages,
+			"Tags":       Tags,
 			"Categories": Categories,
-		}, w)
+		},
+			w)
 		page.Compiled, _ = tidy.Tidy(w.buff)
 	}
 }

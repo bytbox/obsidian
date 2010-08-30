@@ -24,7 +24,7 @@ var verbose = opts.Flag("v", "verbose", "give verbose output")
 var startTime = time.Nanoseconds()
 
 var (
-	confFile string
+	confFile    string
 	templateDir string
 	postDir     string
 	pageDir     string

@@ -18,7 +18,7 @@ func ReadConfig(confFile string) {
 	for _, line := range lines {
 		ind := strings.Index(line, "=")
 		if ind != -1 {
-			key, value := strings.TrimSpace(line[0:ind]), 
+			key, value := strings.TrimSpace(line[0:ind]),
 				strings.TrimSpace(line[ind+1:])
 			Configuration[strings.Title(key)] = value
 		}
