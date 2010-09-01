@@ -66,27 +66,38 @@ func ReadTemplates(templateDir string) {
 	}
 }
 
+func asList(val string) (list []string) {
+	list = strings.Split(val, ",", -1)
+	for i, str := range list {
+		list[i] = strings.TrimSpace(str)
+	}
+	return
+}
+
 func ReadPost(content string, path string) *Post {
 	groups := strings.Split(content, "\n\n", 2)
 	metalines := strings.Split(groups[0], "\n", -1)
 	post := &Post{}
 	post.Content, _ = markdown.Format(groups[1])
 	post.Title = metalines[0]
-	post.Meta = make(map[string]string)
-	for _, line := range metalines[1:] {
+	post.Meta = make(map[string]interface{})
+	for _, line := range metalines[1:] { // TODO move to package config
 		ind := strings.Index(line, ":")
 		if ind != -1 {
 			key, value := line[0:ind], strings.TrimSpace(line[ind+1:])
 			post.Meta[strings.Title(key)] = value
+		
+			// and as a list
+			post.Meta[strings.Title(key)+"List"] = asList(value)
 		}
 	}
 	post.URL = path
 
 	// clean the post
-	if len(post.Meta["category"]) == 0 {
+	if len(post.Meta["Category"].(string)) == 0 {
 		post.Category = "General" // TODO make this configurable
 	} else {
-		post.Category = post.Meta["category"]
+		post.Category = post.Meta["Category"].(string)
 	}
 	return post
 }
@@ -138,7 +149,7 @@ func ReadPage(content string, path string) *Page {
 	page := &Page{}
 	page.Content, _ = markdown.Format(groups[1])
 	page.Title = metalines[0]
-	page.Meta = make(map[string]string)
+	page.Meta = make(map[string]interface{})
 	for _, line := range metalines[1:] {
 		ind := strings.Index(line, ":")
 		if ind != -1 {

@@ -2,6 +2,13 @@
 <div class="post-info">
 <h2>{Post.Title}</h2>
 <div class="post-category">{Post.Category}</div>
+<div class="post-tags">
+{.repeated section Post.Meta.TagsList}
+<div class="post-tag">{@}</div>
+{.or}
+No tags
+{.end}
+</div>
 </div>
 <div class="post-body">
 {Post.Content}
