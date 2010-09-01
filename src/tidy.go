@@ -33,11 +33,10 @@ func Tidy(str string) (html string, err os.Error) {
 		switch token.(type) {
 		case xml.StartElement:
 			elem := token.(xml.StartElement)
-			for i := 0; i < indent; i++ {
-				html += indentation
-			}
-			if String(elem.Name)=="pre" {
-				inpre = true
+			if !inpre {
+				for i := 0; i < indent; i++ {
+					html += indentation
+				}
 			}
 			html += "<" + String(elem.Name)
 			for _, attr := range elem.Attr {
@@ -45,29 +44,45 @@ func Tidy(str string) (html string, err os.Error) {
 					String(attr.Name),
 					attr.Value)
 			}
-			html += ">\n"
+			html += ">"
+			if String(elem.Name)=="pre" {
+				inpre = true
+			}
+			if !inpre {
+				html+="\n"
+			}
 			indent++
 		case xml.EndElement:
 			elem := token.(xml.EndElement)
+			indent--
+			if !inpre {
+				for i := 0; i < indent; i++ {
+					html += indentation
+				}
+			}
+			html += fmt.Sprintf("</%s>", String(elem.Name))
 			if String(elem.Name)=="pre" {
 				inpre = false
 			}
-			indent--
-			for i := 0; i < indent; i++ {
-				html += indentation
+			if !inpre {
+				html += fmt.Sprintf("\n")
 			}
-			html += fmt.Sprintf("</%s>\n", String(elem.Name))
 		case xml.CharData:
 			data := token.(xml.CharData)
 			str := bytes.NewBuffer(data).String()
-			str = strings.Trim(str, " \r\n\t")
+			if !inpre {
+				str = strings.Trim(str, " \r\n\t")
+			}
 			if len(str) > 0 {
 				if !inpre {
 					for i := 0; i < indent; i++ {
 						html += indentation
 					}
 				}
-				html += str + "\n"
+				html += str
+				if !inpre {
+					html += "\n"
+				}
 			}
 		case xml.Comment:
 			// don't print comments
