@@ -28,12 +28,16 @@ func Tidy(str string) (html string, err os.Error) {
 	// bit by indenting
 	indent := 0 // the current indent level
 	token, err := parser.Token()
+	inpre := false // true if we are in a <pre> tag
 	for err == nil {
 		switch token.(type) {
 		case xml.StartElement:
 			elem := token.(xml.StartElement)
 			for i := 0; i < indent; i++ {
 				html += indentation
+			}
+			if String(elem.Name)=="pre" {
+				inpre = true
 			}
 			html += "<" + String(elem.Name)
 			for _, attr := range elem.Attr {
@@ -45,6 +49,9 @@ func Tidy(str string) (html string, err os.Error) {
 			indent++
 		case xml.EndElement:
 			elem := token.(xml.EndElement)
+			if String(elem.Name)=="pre" {
+				inpre = false
+			}
 			indent--
 			for i := 0; i < indent; i++ {
 				html += indentation
@@ -55,8 +62,10 @@ func Tidy(str string) (html string, err os.Error) {
 			str := bytes.NewBuffer(data).String()
 			str = strings.Trim(str, " \r\n\t")
 			if len(str) > 0 {
-				for i := 0; i < indent; i++ {
-					html += indentation
+				if !inpre {
+					for i := 0; i < indent; i++ {
+						html += indentation
+					}
 				}
 				html += str + "\n"
 			}
@@ -74,6 +83,7 @@ func Tidy(str string) (html string, err os.Error) {
 		token, err = parser.Token()
 	}
 	if err != os.EOF {
+		fmt.Fprint(os.Stderr, err)
 		// return the original string
 		return str, err
 	}
